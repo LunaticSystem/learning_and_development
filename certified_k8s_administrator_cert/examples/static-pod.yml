@@ -1,0 +1,14 @@
+mkdir -p /etc/kubernetes/manifests/
+cat <<EOF >/etc/kubernetes/manifests/static-busybox.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-busybox
+  labels:
+    role: myrole
+spec:
+  containers:
+    - name: static-busybox
+      image: busybox
+      command: ["sleep 1000"]
+EOF

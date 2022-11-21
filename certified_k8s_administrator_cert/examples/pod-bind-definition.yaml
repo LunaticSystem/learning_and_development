@@ -1,0 +1,8 @@
+apiVersion: app/v1
+kind: Binding
+metadata:
+  name: nginx
+target:
+  apiVersion: app/v1
+  kind: Node
+  name: <name_of_node>
