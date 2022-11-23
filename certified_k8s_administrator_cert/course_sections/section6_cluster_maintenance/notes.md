@@ -17,6 +17,65 @@
 ### Kubernetes software versions
 
 ### Cluster Upgrade Process
+* Not manditory for all components 
+* No other component should be at a version higher than the kubeapi server
+* Controller manager and scheduler can be at one version lower then kube api server
+* Kubelet and kube proxy can be at two versions lower.
+* Kubectl can be at one version higher or lower than kube api server.
+* Kubernetes supports 3 prior minor version releases. i.e 1.12, 1.11, 1.10
+* Recommended to upgrade one minor version at a time.
+* If your cluster was deployed by:
+  * A cloud provider - Then use the simple upgrade method provided by the cloud provider
+  * Kubeadm - Use the `kubeadm upgrade plan` and `kubeadm upgrade apply` commands which will help assist you in the upgrade.
+  * Manually - You will need to upgrade each component manually.
+
+### Kubeadm Upgrade process
+Upgrades are comprised of two main steps:<br />
+* Upgrading the Master
+* Upgrading the Worker nodes
+  * Upgrade all at once - however in this case the pods are down and no one can access the applications. Requires downtime.
+  * Upgrade one node at a time - zero downtime upgrade
+  * Add new nodes to the cluster with newer software version. Especially convenient in a cloud env.
+
+Kubeadm does not upgrade kubelets.
+
+Process (https://v1-24.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/):<br />
+[Master]
+* Upgrade kubeadm to the same minor build of k8s you are upgrading too.
+  ```
+  apt-get upgrade -y kubeadm=1.12.0-00
+  ```
+* Run the kubeadm tool and apply the upgrade.
+  ```
+  kubeadm upgrade apply v1.12.0
+  ```
+* Upgrade kubelet on the master node.
+  ```
+  apt-get upgrade -y kubelet=1.12.0-00
+  systemctl restart kubelet
+  ```
+[Worker]<br />
+* Drain the node you are going to upgrade.
+  ```
+  kubectl drain <node_name>
+  ```
+* Upgrade the kubeadm and kubelet packages.
+  ```
+  apt-get upgrade -y kubeadm=1.12.0-00
+  apt-get upgrade -y kubelet=1.12.0-00
+  ```
+* Use kubeadm to upgrade the node configuration.
+  ```
+  kubeadm upgrade node config --kubelet-version v1.12.0
+  ```
+* Restart the kubelet
+  ```
+  systemctl restart kubelet
+  ```
+* Unmark the node
+  ```
+  kubectl uncordon <node_name>
+  ```
 
 ### Backup and Restore Methods
 
