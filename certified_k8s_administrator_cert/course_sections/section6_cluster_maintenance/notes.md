@@ -1,6 +1,6 @@
 # SECTION 6: CLUSTER MAINTENANCE
 
-### OS Upgrades
+## OS Upgrades
 * Pod Eviction Timeout: The maximum amount of time kubernetes will wait for a missing node to come back online.
 * A safer way to take a node down for maintanence you can safely drain the pods off of the node you are upgrading which then moves them to other nodes in the cluster. Also node is marked as unscheduled.
   ```
@@ -14,9 +14,9 @@
   ```
   kubectl cordon <node-name>
   ```
-### Kubernetes software versions
+## Kubernetes software versions
 
-### Cluster Upgrade Process
+## Cluster Upgrade Process
 * Not manditory for all components 
 * No other component should be at a version higher than the kubeapi server
 * Controller manager and scheduler can be at one version lower then kube api server
@@ -29,7 +29,7 @@
   * Kubeadm - Use the `kubeadm upgrade plan` and `kubeadm upgrade apply` commands which will help assist you in the upgrade.
   * Manually - You will need to upgrade each component manually.
 
-### Kubeadm Upgrade process
+## Kubeadm Upgrade process
 Upgrades are comprised of two main steps:<br />
 * Upgrading the Master
 * Upgrading the Worker nodes
@@ -77,6 +77,68 @@ Process (https://v1-24.docs.kubernetes.io/docs/tasks/administer-cluster/kubeadm/
   kubectl uncordon <node_name>
   ```
 
-### Backup and Restore Methods
+## Backup and Restore Methods
+What should you consider backing up in a k8s cluster?<br />
+* Resource Configuration
+  * Declaritively creating resources is the [preferred] way to save your configurations in a source code repository.
+  * Imperatively creating resources can still be backed up and it is advised to perform this type of backup as a fail safe just in case someone didn't create the resources Declaritvely.
+* ETCD Cluster
+* Persistent Volumes(Optional)
+
+### Backing up Resource Configs
+* Backup using the kubectl command to get all resources in all namespaces and output them to a yaml file.
+  ```
+  kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+  ```
+
+### Backing up ETCD
+* Backup the data directory mounted used by ETCD to store the database.
+  * Works best when in a managed environment where you do not have access to the etcd database.
+* Take a snapshot of the ETCD database.
+  ```
+  ETCDCTL_API=3 etcdctl snapshot save snapshot.db \
+    --endpoints=https://127.0.0.1:2379 \
+    --cacert=/etc/etcd/ca.crt \
+    --cert=/etc/etcd/etcd-server.crt \
+    --key=/etc/etcd/etc
+  ```
+  * To view the status of the snapshot use the following command
+    ```
+    ETCDCTL_API=3 etcdctl snapshot status snapshot.db \
+    --endpoints=https://127.0.0.1:2379 \
+    --cacert=/etc/etcd/ca.crt \
+    --cert=/etc/etcd/etcd-server.crt \
+    --key=/etc/etcd/etc
+    ```
+  * To restore ETCD from a snapshot from etcdctl use the following command.<br />
+    1. Stop the kube-apiserver service
+       ```
+       systemctl stop kube-apiserver
+       ```
+    2. Run the etcdctl snapshot restore command.
+       ```
+       ETCDCTL_API=3 etcdctl snapshot restore snapshot.db \
+         --endpoints=https://127.0.0.1:2379 \
+         --cacert=/etc/etcd/ca.crt \
+         --cert=/etc/etcd/etcd-server.crt \
+         --key=/etc/etcd/etc \ 
+         --data-dir /var/lib/etcd-from-backup
+       ```
+    3. Configure etcd service file to use the new data directory location.
+       ```
+       --data-dir=/var/lib/etcd-from-backup
+       ```
+    4. Reload the ETCD service.
+       ```
+       systemctl daemon-reload
+       ```
+    5. Restart the ETCD service.
+       ```
+       systemctl restart etcd
+       ```
+    6. Start up the kube-apiserver service.
+       ```
+       systemctl start kube-apiserver
+       ```
 
 ### Working ETCDCTL
