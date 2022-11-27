@@ -16,5 +16,4 @@
   * [Section 12: End to End Testing](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section12_e2e_tests)
   * [Section 13: Troubleshooting](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section13_troubleshooting)
   * [Section 14: Other Topics](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section14_other_topics)
-* Examples
-* Lab Exercises
+* [Examples](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/examples)
