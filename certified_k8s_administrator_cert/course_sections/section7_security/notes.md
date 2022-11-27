@@ -318,11 +318,192 @@
       * Validity(Not After) - The expiration of the certificate
       * Issuer - Name of the ca who issued the certificate
 ## Certificates API
+### Process to create a user cert throught the certificates api.
+* User creates a key.
+* User creates a CSR with that key
+* User sends that key to administrator
+* Administrator base64 encodes the csr
+  ```
+  cat jane.csr |base64 |tr -d "\n"
+  ```
+* Adminstrator creates a certificate signing request object in k8s. i.e jane-csr.yaml
+  ```yaml
+  apiVersion: certificates.k8s.io/v1beta1
+  kind: CertificateSigningRequest
+  metadata:
+    name: jane
+  spec:
+    groups:
+    - system:authenticated
+    usages:
+    - digital signature
+    - key encipherment
+    - server auth
+    request:
+         LXXXXXXXXXXXXXXXXXXXXXXXXX
+         XXXXXXXXXXXXXXXXXXXXXXXXXX
+         XXXXXXXXXXXXXXXXXXXXXXXXXX
+         XXXXXXXXXXXXXXXXXXXXXXXXXX
+         XXXXXXXXXXXXXX
+  ```
+* Submit the request to k8s.
+  ```
+  kubectl apply -f jane-csr.yaml
+  ```
+### Get and Approve CSR requests in K8s.
+* Gather up the available csr requests in k8s.
+  ```
+  kubectl get csr
+  ```
+* Approve CSR request.
+  ```
+  kubectl certificate approve jane
+  ```
+### View Certificate generated after approval.
+* Gather the certificate information from the csr.
+  ```
+  kubectl get csr jane -o yaml |grep certificate
+  ```
+* Decode the base64 to get the actually certificate.
+  ```
+  echo "XXXXXXXXXXXXXXXXXXXXX=" |base64 -d
+  ```
 
+### Information about the Certificate API
+* The kube-controller-manager is tasked with managing the certificate api.
+* Controller manager has two options that specify the ca signing cert and key.
+  ```
+  --cluster-signing-cert-file
+  --cluster-signing-key-file
+  ```
 ## KubeConfig
+* Kubectl defaultly looks for kubeconfig files in the `$HOME/.kube/config` location. 
+* Format:
+  * Clusters - Clusters you have access too.
+  * Contexts - Define which user account will be used to acces which cluster
+  * Users - User accounts that have access to these clusters.
+* Kubeconfig Example:
+  ```yaml
+  apiVersion: v1
+  kind: Config
 
+  clusters:
+  - name: my-kube-playground
+    cluster:
+      certificate-authority: ca.crt
+      server: https://my-kube-playgound:6443
+
+  contexts:
+  - name: my-kube-admin@my-kube-playground
+    context:
+      cluster: my-kube-playground
+      user: my-kube-admin
+
+  users:
+  - name: my-kube-admin
+    user:
+      client-certificate: admin.crt
+      client-key: admin.key
+  ```
+* To set a default context in the kube config add the following entry between the kind and clusters section in the KubeConfig.
+  ```yaml
+  kind: Config
+  current-context: my-kube-admin@my-kube-playground
+
+  clusters:
+  ```
+* To get the KubeConfig with kubectl.
+  ```
+  kubectl config view
+  ```
+* To get informaation about a non default kubeconfig.
+  ```
+  kubectl config view --kubeconfig=my-custom-config
+  ```
+* Supplying a namespace in a context in the kubeconfig.
+  ```yaml
+  contexts:
+  - name: my-kube-admin@my-kube-playground
+    context:
+      cluster: my-kube-playground
+      user: my-kube-admin
+      namespace: finance
+  ```
+* To add a certificate not as a file do the following.
+  * Encode the certificate.
+    ```
+    cat ca.crt |base64
+    ```
+  * Supply the base64 encoded value to the `certificate-authority-data` field in cluster instead of the `certificate-authority` field.
+    ```yaml
+    clusters:
+    - name: my-kube-playground
+      cluster:
+        certificate-authority-data: L0XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==
+        server: https://my-kube-playgound:6443
+    ```
 ## API Groups
+* Check api version.
+  ```
+  curl https://kube-master:6443/version
+  ```
+### Groups
+* /version - Used to check the version of the api on the cluster.
+* /api - Core group is where the all core functionality exists
+  * namespaces
+  * pods
+  * rc
+  * events
+  * endpoints
+  * nodes
+  * bindings
+  * PV
+  * PVC
+  * configmaps
+  * secrets
+  * services
+* /apis - Named group is where all new funtionality will be stored currently and in the future.
+  * /apps
+    * /v1
+      * /deployments (resources)
+        * list (actions/verbs)
+        * get
+        * create
+        * delete
+        * update
+        * watch
+      * /replicasets
+      * /statefulsets
+  * /extensions
+  * /networking.k8s.io
+    * /v1
+      * /networkpolicies
+  * /storage.k8s.io
+  * /authentication.k8s.io
+  * /certificates.k8s.io
+    * /v1
+      * /certificatesigningrequests
+* /logs
+* /healthz - Monitor health of cluster
+* /metrics - Monitor health of cluster
 
+### Listing out all groups and resources within those groups.
+```
+curl http://localhost:6443 -k \
+  --key admin.key
+  --cert admin.crt
+  --cacert ca.crt
+
+curl http://localhost:6443/apis -k --key admin.key --cert admin.crt --cacert ca.crt |grep "name"
+```
+
+You can also use kubectl proxy to proxy requests using the certs provided in your kubeconfig like so..
+```
+kubectl proxy
+starting to serve on 127.0.0.1:8001
+
+curl http://localhost:8001 -k
+```
 ## Authorization
 
 ## Role Based Access Controls
