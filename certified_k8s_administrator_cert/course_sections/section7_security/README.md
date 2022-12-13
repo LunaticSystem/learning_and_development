@@ -505,21 +505,285 @@ starting to serve on 127.0.0.1:8001
 curl http://localhost:8001 -k
 ```
 ## Authorization
+### Authorization Methods
+* Node
+  * SYSTEM:NODES
+  * system:node:node01 group
+  * Kubelet
+    * Read:
+      * Services
+      * Endpoints
+      * Nodes
+      * Pods
+    * Write:
+      * Node Status
+      * Pod Status
+      * Events
+* ABAC (Attribute Based Authorization Control)
+  * Associate a user or group of users with a set of permissions.
+  * Created by a Policy File
+    ```yaml
+    apiVersion: v1
+    kind: Policy
+    spec:
+      user: dev-user
+      namespace: "*"
+      resource: pods
+      apiGroup: "*"
+    ```
+  * Policy file needs to be changed manually.
+  * Once the policy file is changed you will have to restart the kube-apiserver
+  * More difficult to change due to the manual nature of the changes and the requirement to reboot the kube-apiserver.
+* RBAC (Role Based Authorization Control)
+  * Defines a role with the appropriate permissions and associate that role to a user or group of users.
+  * Standard approach.
+  * Easier as if you need to change a bunch of permissions for users you can just change the RBAC role and not the individual users.
+* Webhooks
 
+### How to configure the authorization modes
+* To configure the modes you will have to first choose the modes you want.
+* Then set them in the `authorization-mode` configuration option in the kube-apiserver.
+  ```
+  ExecStart=/usr/local/bin/kube-apiserver \\
+    --advertise-address=${INTERNAL_IP} \\
+    --allow-priviledged=true \\
+    --apiserver-count=3 \\
+    --authorization-mode=Node,RBAC,Webhook \\
+  ...
+  ```
+* Authorization modes are used in the order in which they are specified in the `authorization-mode` configuration. Everytime a module denies a request then it moves to the next module in the list until it is approved.
 ## Role Based Access Controls
+Created in a per namespace basis (Namespace Scoped).<br />
+* Namespaced Resources:
+  * Pods
+  * Replicasets
+  * Deployments
+  * Jobs
+  * services
+  * secrets
+  * roles
+  * rolebindings
+  * configmaps
+  * PVC
+### Process to create RBAC
+1. Create the role object.
+  ```yaml
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: developer
+  rules:
+  - apiGroups: [""]   <--------- if using core groups leave blank however for other groups add the group names.
+    resources: ["pods"]
+    verbs: ["list", "get", "create", "update", "delete"] 
+  ```
+2. Apply role to cluster.
+  ```
+  kubectl create -f developer-role.yaml
+  ```
+3. Create a role binding object. This binds the users to the role.
+  ```yaml
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: devuser-developer-binding
+  subjects:
+  - kind: User
+    name: dev-user
+    apiGroup: rbac.authorization.k8s.io
+  roleRef:
+    kind: Role
+    name: developer
+    apiGroup: rbac.authorization.k8s.io
+  ```
+4. Apply the binding to the cluster.
+  ```
+  kubectl create -f developer-binding.yaml
+  ```
+### Listing roles and bindings
+* List roles.
+  ```
+  kubectl get roles
+  ```
+* List role bindings.
+  ```
+  kubectl get rolebindings
+  ```
+* Describe roles.
+  ```
+  kubectl describe role developer
+  ```
+* Describe role bindings.
+  ```
+  kubectl describe rolebinding devuser-developer-binding
+  ```
+### Checking access
+* Checking access as the current user
+  ```
+  kubectl auth can-i create deployments
+  ```
+* Checking access as another user (Impersonation)
+  ```
+  kubectl auth can-i create deployments --as dev-user
+  ```
+### Resource Names
+
 
 ## Cluster Roles and Bindings
+All cluster role and cluster role bindings are for the entire cluster (Cluster Scoped)<br />
 
+* Cluster Scoped Resources:
+  * Nodes
+  * PV
+  * clusterroles
+  * clusterrolebindings
+  * certificatesigningrequests
+  * namespaces
+* Cluster Roles: Roles that dictation permissions for cluster scoped resources
+  * Cluster role object
+    ```yaml
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: cluster-administrator
+    rules:
+    - apiGroups: [""]
+      resources: ["nodes"]
+      verbs: ["list", "get", "create", "delete"]
+    ```
+* Cluster Role Bindings: Binds a cluster role to a perticular user
+  * Cluster role binding object
+    ```yaml
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: cluster-admin-role-binding
+    subjects:
+    - kind: User
+      name: cluster-admin
+      apiGroup: rbac.authorization.k8s.io
+    roleRef:
+      kind: ClusterRole
+      name: cluster-administrator
+      apiGroup: rbac.authorization.k8s.io
+    ```
 ## Service Accounts (Not require for CKA)
 
 ## Service Account Updates
 
 ## Image Security
-
+### Specifying a private registry
+1. Create a secret in the cluster of type `docker-registry` that holds the docker credentials to access the registry.
+  ```
+  kubectl create secret docker-registry regcred \
+    --docker-server=private-registry.io \
+    --docker-username=registry-user \
+    --docker-password=registry-password \
+    --docker-email=registry-user@org.com
+  ```
+2. Add that secret to the pod manifest and supply the private registry location in the image section.
+  ```yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: nginx-pod
+  spec:
+    containers:
+    - name: nginx
+      image: private-registry.io/apps/internal-app
+    imagePullSecrets:
+    - name: regcred
+  ```
 ## Pre-requisite - Security in Docker
 
 ## Security Contexts
-
+* Adding security context at the pod level
+  ```yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: web-pod
+  spec:
+    securityContext:
+      runAsUser: 1000
+    containers:
+    - name: ubuntu
+      image: ubuntu
+  ```
+* Adding security context at the container level
+  ```yaml
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: web-pod
+  spec:
+    containers:
+    - name: ubuntu
+      image: ubuntu
+      securityContext:
+        runAsUser: 1000
+        capabilities:          <------ Can only be added to containers
+          add: ["MAC_ADMIN"]
+  ```
 ## Network Policy
-
+* Network Policy Types
+  * Ingress
+  * Egress
+* Network Solutions that support network policies
+  * Kube-router
+  * Calico
+  * Romana
+  * Weave-net
+* Network Solutions that do not support network policies
+  * Flannel
+* Network Policy Example Ingress
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: db-policy
+  spec:
+    podSelector:
+      matchLabels:
+        role: db
+    policyTypes:
+    - Ingress
+    ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            name: api-pod
+      ports:
+      - protocol: TCP
+        port: 3306
+  ```
+### Developing Network Policies
+* Egress Rule for two pods with two different ports
+  ```yaml
+  apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: internal-policy
+  spec:
+    podSelector:
+      matchLabels:
+        name: internal
+    policyTypes:
+    - Egress
+    egress:
+    - to:
+      - podSelector:
+          matchLabels:
+            name: payroll
+      ports:
+      - protocol: TCP
+        port: 8080
+    - to:
+      - podSelector:
+          matchLabels:
+            name: mysql
+      ports:
+      - protocol: TCP
+        port: 3306
+  ```
 ## Kubectx and Kubens - Command line Utilities
