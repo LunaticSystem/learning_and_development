@@ -284,5 +284,6 @@ spec:
               - name: '*'
     ```
 
+[Section 4: Logging & Monitoring](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section4_logging_monitoring)
 
   

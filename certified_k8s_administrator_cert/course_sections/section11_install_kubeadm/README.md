@@ -55,3 +55,5 @@
 
 ## Installing cluster via kubeadm on controlplane
 * kubeadm init --apiserver-advertise-address 10.44.59.9 --pod-netwrok-cidr 10.244.0.0/16 --apiserver-cert-extra-sans controlplane
+
+[Section 12: End to End Testing](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section12_e2e_tests)

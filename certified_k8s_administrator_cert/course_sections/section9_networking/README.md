@@ -205,3 +205,5 @@
               serviceName: watch-service
               servicePort: 80
     ```
+
+  [Section 10: Design & Install Cluster](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section10_design_install_cluster)

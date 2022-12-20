@@ -787,3 +787,5 @@ All cluster role and cluster role bindings are for the entire cluster (Cluster S
         port: 3306
   ```
 ## Kubectx and Kubens - Command line Utilities
+
+[Section 8: Storage](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section8_storage)

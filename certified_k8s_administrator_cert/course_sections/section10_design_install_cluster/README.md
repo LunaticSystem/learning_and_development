@@ -23,3 +23,5 @@
 ## Choosing Kubernetes Infrastructure
 ## Configure High Availability
 ## ETCD in HA
+
+[Section 11: Install using Kubeadm](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section11_install_kubeadm)

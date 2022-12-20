@@ -250,3 +250,5 @@
   * Replication controller helps in ensuring that a POD is re-created automatically when the application within the POD crashes.
   * It also helps in ensuring enough replicas of the application are running at all times.
 * Kubernetes provides additional support to check the health of applications running within PODs and take necessary actions through Liveness and Readiness Probes.  <-----------Not Required for CKA but is require for CKAD
+
+[Section 6: Cluster Maintenence](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section6_cluster_maintenance)

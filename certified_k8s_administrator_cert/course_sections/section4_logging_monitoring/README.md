@@ -41,3 +41,5 @@
   ```
   kubectl logs -f <pod_name> <container_name>
   ```
+
+[Section 5: Applicatoin Lifecycle Management](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section5_application_lifecycle_management)

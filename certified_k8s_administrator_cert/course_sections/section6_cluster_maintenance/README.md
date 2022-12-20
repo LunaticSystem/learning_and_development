@@ -142,3 +142,6 @@ What should you consider backing up in a k8s cluster?<br />
        ```
 
 ### Working ETCDCTL
+
+
+[Section 7: Security](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section7_security)

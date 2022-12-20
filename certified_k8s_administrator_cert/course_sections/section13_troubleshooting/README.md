@@ -42,3 +42,6 @@
 * Check the status and kubelet logs for more information.
 * Check the certificates on the kubelet.
 ## Network Troubleshooting
+
+
+[Section 14: Other Topics](https://github.com/LunaticSystem/learning_and_development/tree/main/certified_k8s_administrator_cert/course_sections/section14_other_topics)
