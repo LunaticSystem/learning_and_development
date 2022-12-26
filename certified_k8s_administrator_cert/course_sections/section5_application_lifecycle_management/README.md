@@ -221,6 +221,28 @@
   ```
 ## Multi-container PODS Design Patterns
 * Side Car Pattern
+  ```yaml
+  metadata:
+  name: simple-webapp
+  labels:
+    app: webapp
+  spec:
+    containers:
+      - name: main-application
+        image: nginx
+        volumeMounts:
+          - name: shared-logs
+            mountPath: /var/log/nginx
+      - name: sidecar-container
+        image: busybox
+        command: ["sh","-c","while true; do cat /var/log/nginx/access.log; sleep 30; done"]
+        volumeMounts:
+          - name: shared-logs
+            mountPath: /var/log/nginx
+    volumes:
+      - name: shared-logs
+        emptyDir: {}
+  ```
 * Adapter Pattern
 * Ambassador Pattern
 ## InitContainers
