@@ -1,1 +1,151 @@
+# Mac specific generic file database
 .DS_Store
+# Terraform Ignore List:
+.tfvars
+
+# Go Section:
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Python Section:
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are in the dist/ directory, but PyInstaller can
+#  put them in the current directory.
+#  See https://pyinstaller.readthedocs.io/en/stable/usage.html#running-from-a-python-script
+#  and https://github.com/pyinstaller/pyinstaller/wiki/Recipe-mode:-One-Dir
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.po
+
+# Django stuff:
+*.log
+*.pot
+*.sql
+.eslintcache
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# Jupyter Notebook jupyterlab stuff:
+.ipynb_checkpoints
+.jupyter/
+.vscode-jupyter/
+
+# IPython history and logs
+.ipython/
+.python_history
+
+# Environments
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# shell history
+.bash_history
+
+# pyflow
+.pyflow/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ruff
+.ruff_cache
+
+# poetry
+.venv
+
+# flake8
+.flake8
+
+# Black
+.black
+
+# Bandit
+.bandit
+
+# Editors
+.idea/                  # JetBrains IDEs (PyCharm, IntelliJ, etc.)
+.vscode/                # VS Code
+*.swp                   # Vim swap files
+*.swo                   # Vim swap files
+*.un~                   # Emacs backup files
+#*#                     # Emacs auto-save files
+
+# OS generated files
+.localized              # macOS
+Thumbs.db               # Windows
