@@ -6,13 +6,12 @@
 
 ## Code Organization
 * Modules provide the ability to not have to strictly organize code.
-* Organize code in a workspace. Code directory. GOPATH 
+* Organize code in a workspace, Code directory, GOPATH.
   * MAC OS: `/Users/bvandercar/go`
 
 ## Code Structure
 * Application_structure
-  |_ main.go
-* main.go must have a "package main". 4
+* main.go must have a `package main`.
 
 
 ## Compiling (go build) & Running (go run) Go Code
@@ -32,6 +31,14 @@
 * When running `go install` you use paths relative to `GOPATH/src`
 * 
 
+## Go packages and Modules
+
+Work on this later in the course...
 
 
+## Formatting Go Source Code (gofmt)
 
+* Go strongly suggests certain styles
+* gofmt which comes from golang formatter will format a pgorams source scode in an idiomatic way that is easy to read and understand.
+* Example `gofmt -w main.go`. The `-w` overwrites the `main.go` file with the formatted content.
+* You can automatically run gofmt every time you save the a file in vscode.
