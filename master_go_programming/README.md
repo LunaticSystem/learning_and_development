@@ -1,0 +1,15 @@
+# Master Go Programing Course (Udemy)
+
+## Table of contents
+* [Section 2 - Getting Started](section02_getting_started)
+* [Section 3 - Getting Started Challenges](section03_challenge_gs) 
+* [Section 4 - Go Basics](section04_go_basics) 
+* [Section 5 - Go Basics Challenges](section05_challenge_basics)
+* [Section 6 - Flow Control](section06_program_flow_control)
+* [Section 7 - Flow Control Challenges](section07_challenge_program_flow)
+* [Section 8 - Arrays](section08_arrays)
+* [Section 9 - Array Challenges](section09_challenge_arrays)
+* [Section 10 - Slices In Go](section10_slices_in_go)
+* [Section 11 - Slices In Go Challenges](section11_challenge_slices)
+* [Section 12 - Strings, Runes, Bytes](section12_strings_runes_bytes)
+* [Section 13 - Strings Challenge](section13_challenge_strings)
